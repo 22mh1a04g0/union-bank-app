@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block auth_content %}
+<div class="auth-container" style="padding: 20px 0;">
+    <div class="auth-card" style="margin: auto;">
+        <h2>Open an Account</h2>
+        <form method="POST" action="">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" required placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" required placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required placeholder="Create a strong password">
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required placeholder="Confirm your password">
+            </div>
+            <button type="submit" class="btn btn-danger btn-block">Register Account</button>
+        </form>
+        <div style="margin-top: 20px; text-align: center;">
+            <p style="color: var(--text-muted);">Already have an account? <a href="{{ url_for('login') }}" style="color: var(--primary-blue); text-decoration: none;">Login Here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

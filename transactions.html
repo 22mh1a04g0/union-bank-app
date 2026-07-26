@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+    <h2 class="page-title" style="margin-bottom: 0;">Transaction History</h2>
+    <button onclick="downloadPDF()" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Download PDF</button>
+</div>
+
+<div class="card" id="transactionTable">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for txn in pagination.items %}
+                <tr>
+                    <td>{{ txn.date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>
+                        <span style="font-weight: 500; color: {% if 'Deposit' in txn.type or 'In' in txn.type %}var(--success){% else %}var(--primary-red){% endif %};">
+                            {{ txn.type }}
+                        </span>
+                    </td>
+                    <td>{{ txn.description }}</td>
+                    <td>${{ "{:,.2f}".format(txn.amount) }}</td>
+                    <td>${{ "{:,.2f}".format(txn.balance_after) }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">No transactions found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination Controls -->
+    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+        {% if pagination.has_prev %}
+            <a href="{{ url_for('transactions', page=pagination.prev_num) }}" class="btn btn-primary" style="padding: 8px 15px;">Previous</a>
+        {% endif %}
+        
+        <span style="padding: 8px 15px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px;">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+        
+        {% if pagination.has_next %}
+            <a href="{{ url_for('transactions', page=pagination.next_num) }}" class="btn btn-primary" style="padding: 8px 15px;">Next</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
