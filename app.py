@@ -257,4 +257,14 @@ if __name__ == '__main__':
     os.makedirs(os.path.join(basedir, 'database'), exist_ok=True)
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=5000)
+    import os
+
+if __name__ == '__main__':
+    # Make sure database directory exists
+    os.makedirs(os.path.join(basedir, 'database'), exist_ok=True)
+
+    with app.app_context():
+        db.create_all()
+
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
