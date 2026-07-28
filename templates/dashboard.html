@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="page-title">Dashboard Overview</h2>
+
+<div class="dashboard-cards">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Available Balance</span>
+            <div class="card-icon bg-blue">
+                <i class="fas fa-wallet"></i>
+            </div>
+        </div>
+        <div class="card-value">${{ "{:,.2f}".format(current_user.balance) }}</div>
+        <p style="color: var(--text-muted); margin-top: 10px; font-size: 0.9rem;">Account: {{ current_user.account_number }}</p>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Total Deposits</span>
+            <div class="card-icon bg-green">
+                <i class="fas fa-arrow-down"></i>
+            </div>
+        </div>
+        <div class="card-value">${{ "{:,.2f}".format(deposits) }}</div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Total Withdrawals</span>
+            <div class="card-icon bg-red">
+                <i class="fas fa-arrow-up"></i>
+            </div>
+        </div>
+        <div class="card-value">${{ "{:,.2f}".format(withdrawals) }}</div>
+    </div>
+</div>
+
+<div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <!-- Chart Container -->
+    <div class="card" style="flex: 1; min-width: 300px;">
+        <h3 style="margin-bottom: 20px; color: var(--text-main);">Transaction Summary</h3>
+        <div style="height: 250px; position: relative;">
+            <canvas id="transactionChart"></canvas>
+            <!-- Hidden element to pass data to JS -->
+            <div id="chartData" data-deposits="{{ deposits }}" data-withdrawals="{{ withdrawals }}" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card" style="flex: 1; min-width: 300px;">
+        <h3 style="margin-bottom: 20px; color: var(--text-main);">Quick Actions</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <a href="{{ url_for('deposit') }}" class="btn btn-primary" style="text-align: center;"><i class="fas fa-arrow-down"></i> Deposit</a>
+            <a href="{{ url_for('withdraw') }}" class="btn btn-danger" style="text-align: center;"><i class="fas fa-arrow-up"></i> Withdraw</a>
+            <a href="{{ url_for('transfer') }}" class="btn btn-primary" style="text-align: center; grid-column: span 2;"><i class="fas fa-exchange-alt"></i> Transfer Money</a>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 20px;">
+    <div class="card-header">
+        <h3 style="color: var(--text-main);">Recent Transactions</h3>
+        <a href="{{ url_for('transactions') }}" class="btn btn-primary" style="padding: 8px 15px; font-size: 0.9rem;">View All</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for txn in recent_transactions %}
+                <tr>
+                    <td>{{ txn.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <span style="font-weight: 500; color: {% if 'Deposit' in txn.type or 'In' in txn.type %}var(--success){% else %}var(--primary-red){% endif %};">
+                            {{ txn.type }}
+                        </span>
+                    </td>
+                    <td>{{ txn.description }}</td>
+                    <td>${{ "{:,.2f}".format(txn.amount) }}</td>
+                    <td>${{ "{:,.2f}".format(txn.balance_after) }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">No transactions found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}
